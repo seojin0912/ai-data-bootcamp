@@ -74,7 +74,7 @@ INSERT INTO orders VALUES
   ('O0027', 'C013', '2024-01-22', 'Shipped', 405000),
   ('O0028', 'C006', '2024-01-28', 'Paid', 58000),
   ('O0029', 'C004', '2024-02-04', 'Returned', 73000),
-  ('O0030', 'C012', '2024-02-11', 'Paid', 187000)
+  ('O0030', 'C012', '2024-02-11', 'Paid', 187000);
 
 SELECT
   *
@@ -88,18 +88,18 @@ LIMIT 5 ;
 SELECT
   *
 FROM customers
-WHERE grade = 'Gold' AND country = 'Korea'
+WHERE grade = 'Gold' AND country = 'Korea';
 
 -- Q2. Gold 또는 Silver 등급이면서, 국가 정보가 결측되지 않은 고객은?
 SELECT
   *
 FROM customers
-WHERE grade IN ('Gold', 'Silver') 
- AND country IS NOT NULL
+WHERE grade IN ('Gold', 'Silver')
+ AND country IS NOT NULL;
 
 -- Q3. 2023년 4분기(10~12월)에 발생한 주문 중 결제금액이 10만~30만원 사이인 주문은?
 
-DESCRIBE orders
+DESCRIBE orders;
 
 SELECT
   *
@@ -118,7 +118,7 @@ WHERE amount IS NULL
 SELECT
   *
 FROM customers
-WHERE grade IS NULL
- OR grade <> 'Bronze' AND Country <> 'Korea' ;
+WHERE (grade IS NULL OR grade <> 'Bronze')
+ AND Country <> 'Korea';
 
 DESCRIBE customers
