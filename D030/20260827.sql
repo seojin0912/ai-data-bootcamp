@@ -1,6 +1,8 @@
+-- Active: 1788113119502@@127.0.0.1@3306
+-- Active: 1788113119502@@127.0.0.1@3306-- Active: 1788113119502@@127.0.0.1@3306-- Active: 1788113119502@@127.0.0.1@3306
 
-CREATE DATABASE IF NOT EXISTS dataset_name;
-USE dataset_name;
+ATTACH IF NOT EXISTS ':memory:' AS project_name;
+CREATE SCHEMA IF NOT EXISTS project_name.dataset_name;
 
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
@@ -10,3 +12,4 @@ CREATE TABLE customers (
   signup_date DATE, /* 가입일 */
   grade VARCHAR(20) /* 등급 (Gold/Silver/Bronze) */
 );
+

@@ -10,7 +10,7 @@
 
 -- [C1] LMS(DuckDB) 준비 — BigQuery로 학습한다면 이 셀은 건너뛰세요.
 -- BigQuery와 똑같은 `project_name.dataset_name.표` 이름을 쓸 수 있도록 이름 공간을 만듭니다.
-ATTACH IF NOT EXISTS ':memory:' AS project_name;
+ATTACH IF NOT EXISTS 'memory' AS project_name ;
 CREATE SCHEMA IF NOT EXISTS project_name.dataset_name;
 
 -- [C2]
