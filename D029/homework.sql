@@ -1,3 +1,5 @@
+-- Active: 1788113119502@@127.0.0.1@3306
+-- Active: 1787731758660@@127.0.0.1@3306@mysqldataset_namedataset_namedataset_name
 -- 자유롭게 쿼리를 작성하고 실행하세요 (위에서 만든 테이블 사용 가능)
 
 

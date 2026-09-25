@@ -715,7 +715,67 @@ FROM cust
 ORDER BY 총구매액 DESC ;
 
 
+-- 질문 1. 퍼널 전환율을 막대그래프로 그려, 어디서 가장 많이 이탈하는지 한눈에 봅니다.
+SELECT
+  'visit' AS stage,
+  COUNT(DISTINCT CASE WHEN event_type = 'visit' THEN customer_id END) AS users
+FROM project_name.dataset_name.events
+UNION ALL
+SELECT
+  'view',
+  COUNT(DISTINCT CASE WHEN event_type = 'view' THEN customer_id END)
+FROM project_name.dataset_name.events
+UNION ALL
+SELECT
+  'add_to_cart',
+  COUNT(DISTINCT CASE WHEN event_type = 'add_to_cart' THEN customer_id END)
+FROM project_name.dataset_name.events
+UNION ALL
+SELECT
+  'purchase',
+  COUNT(DISTINCT CASE WHEN event_type = 'purchase' THEN customer_id END)
+FROM project_name.dataset_name.events ;
 
 
+-- 질문 2. RFM 기준으로 고객 등급별 인원을 집계합니다.
+WITH rfm AS (
+  SELECT
+    customer_id,
+    date_diff('day', MAX(order_date), DATE '2024-03-01') /* BigQuery: DATE_DIFF(DATE '2024-03-01', MAX(order_date), DAY) */ AS recency,
+    SUM(amount) AS monetary
+  FROM project_name.dataset_name.orders
+  WHERE
+    status NOT IN ('Cancelled', 'Returned')
+    AND amount IS NOT NULL
+  GROUP BY
+    customer_id
+)
+SELECT
+  CASE
+    WHEN monetary >= 300000 AND recency <= 90
+    THEN '핵심 고객'
+    WHEN recency > 120
+    THEN '이탈 위험'
+    ELSE '일반 고객'
+  END AS 고객등급,
+  COUNT(*) AS 인원
+FROM rfm
+GROUP BY
+  1
+ORDER BY
+  인원 DESC ;
 
 
+-- 코드 퀴즈
+-- 문제: events에서 이벤트 종류별(event_type) 발생 횟수를 많은 순으로 집계합니다.
+-- [C32] 코드 퀴즈 — 이벤트 종류별 발생 횟수 집계
+
+-- 여기에 SQL 쿼리를 작성하세요.
+SELECT
+  event_type,
+  COUNT(*) AS 횟수
+FROM project_name.dataset_name.events
+GROUP BY
+  event_type
+ORDER BY
+  횟수 DESC ;

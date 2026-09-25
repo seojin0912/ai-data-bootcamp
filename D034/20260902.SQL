@@ -1,7 +1,11 @@
 ATTACH IF NOT EXISTS ':memory:' AS project_name;
+CREATE SCHEMA IF NOT EXISTS project_name.dataset_name;
+
+
 CREATE OR REPLACE TABLE project_name.dataset_name.amazon AS
 SELECT * FROM read_csv('C:\Users\tjwls\OneDrive\문서\ai-data-bootcamp\D034\amazon.csv', header = true);
 
+-- 0단계 전처리
 CREATE OR REPLACE TABLE project_name.dataset_name.amazon_clean AS
 SELECT
   product_id,
@@ -16,7 +20,7 @@ SELECT
 FROM project_name.dataset_name.amazon;
 
 
-
+-- null 개수 확인 = 1
 SELECT
   COUNT(*) AS 전체행수,
   COUNT(rating) AS rating있는행수,
@@ -70,11 +74,36 @@ FROM scored
 WHERE rating > 카테고리평균평점 AND rating_count > 카테고리평균리뷰수
 ORDER BY category, rating_count DESC;
 
--- 시스템 6 — "다들 한마디씩 남긴 화제의 상품"
+
+-- 시스템 8 — "지금 놓치면 아까운 특가"
+WITH tiered AS (
+  SELECT
+    product_id, product_name, discount_percentage, rating,
+    CASE
+      WHEN discount_percentage >= 70 THEN '70%_이상'
+      WHEN discount_percentage >= 50 THEN '50~70%'
+      ELSE '30~50%'
+    END AS discount_tier
+  FROM project_name.dataset_name.amazon_clean
+  WHERE discount_percentage >= 30
+),
+ranked AS (
+  SELECT
+    discount_tier, product_name, discount_percentage, rating,
+    DENSE_RANK() OVER (PARTITION BY discount_tier ORDER BY rating DESC) AS tier_rank
+  FROM tiered
+)
+SELECT *
+FROM ranked
+WHERE tier_rank <= 3
+ORDER BY discount_tier desc, tier_rank;
+
+
+-- 시스템 10 — "요즘 진짜 잘 나가는 상품 총정리"
 SELECT
-  product_id, product_name,
-  ARRAY_LENGTH(SPLIT(user_id, ',')) AS reviewer_count
+  product_id, product_name, rating, rating_count,
+  ROUND(rating * LN(rating_count + 1), 2) AS popularity_index,
+  RANK() OVER (ORDER BY rating * LN(rating_count + 1) DESC) AS overall_rank
 FROM project_name.dataset_name.amazon_clean
-ORDER BY reviewer_count DESC
+ORDER BY overall_rank
 LIMIT 100;
----> 다 리뷰한 사람 수가 8개... 이건 못 쓰겠다 
